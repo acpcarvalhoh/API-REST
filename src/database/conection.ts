@@ -1,16 +1,21 @@
-import knex from "knex";
-import path from "path";
+import  knex from "knex";
+import { Knex }from "knex";
 
-export const config = {
+
+export const config: Knex.Config = {
     client: 'sqlite3',
     connection: {
-        filename: path.resolve(__dirname, "..", "..", "tmp", "database.db")
+        filename: "./tmp/database.db"
     },
     useNullAsDefault: true,
-    
+    migrations: {
+        extension: "ts",
+        directory: "./tmp/migrations"
+    },
 };
 
-export const conection = knex(config);
+export const db = knex(config);
+
 
 
 

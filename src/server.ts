@@ -1,15 +1,19 @@
 import fastify from "fastify";
-import { conection } from "./database/conection";
-
+import { db } from "./database/conection";
+import crypto from "node:crypto"
 
 const app = fastify();
 
 const PORT = 3333;
 
 app.get("/users", async () => {
-    const tables = await conection("sqlite_schema").select("*");
+    const transactions = await db("transactions").insert({
+        id: crypto.randomUUID(),
+        title: "Trasação de teste",
+        amount: 1000
+    });
 
-    return tables;
+    return transactions;
 });
 
 
