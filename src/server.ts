@@ -1,10 +1,10 @@
 import fastify from "fastify";
 import { db } from "./database/conection";
 import crypto from "node:crypto"
+import { env } from "../env";
 
 const app = fastify();
 
-const PORT = 3333;
 
 app.get("/users", async () => {
     const transactions = await db("transactions").insert({
@@ -18,7 +18,7 @@ app.get("/users", async () => {
 
 
 app.listen({
-    port: PORT
+    port: env.PORT
 }).then(() => {
-    console.log(`Aplication running on port ${PORT}`);
+    console.log(`Aplication running on port ${env.PORT}`);
 });
