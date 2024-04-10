@@ -1,21 +1,12 @@
 import fastify from "fastify";
-import { db } from "./database/conection";
-import crypto from "node:crypto"
 import { env } from "../env";
+import { transactionsRoutes } from "../routes/transactions.routes";
 
 const app = fastify();
 
-
-app.get("/users", async () => {
-    const transactions = await db("transactions").insert({
-        id: crypto.randomUUID(),
-        title: "Trasação de teste",
-        amount: 1000
-    });
-
-    return transactions;
+app.register(transactionsRoutes, {
+    prefix: 'transactions',
 });
-
 
 app.listen({
     port: env.PORT
