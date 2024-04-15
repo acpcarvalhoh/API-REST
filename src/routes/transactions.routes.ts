@@ -2,31 +2,50 @@ import { FastifyInstance } from "fastify";
 import { db } from "../database/conection";
 import { z } from "zod";
 import { randomUUID } from "crypto";
+import { checkSessionsId } from "../middlewares/checkSessionsId";
 
 export async function transactionsRoutes(app: FastifyInstance){
 
-    app.get("/", async (request, replay) => {
+    app.get("/", 
+    {
+        preHandler: [checkSessionsId]
+    }, 
+    async (request, replay) => {
+        const sessions_id = request.cookies.sessionsId;
         
         const transactions = await db("transactions").where("sessions_id", sessions_id).select();
 
         return { transactions };
     });
 
-    app.get("/:id", async (request, replay) => {
+    app.get("/:id", 
+    {
+        preHandler: [checkSessionsId]
+    }, 
+    async (request, replay) => {
         
         const getTransactionParamsSchema = z.object({
             id: z.string().uuid()
         });
 
         const { id } = getTransactionParamsSchema.parse(request.params)
+        const { sessionsId }= request.cookies;
 
-        const transaction = await db("transactions").where({ id }).first()
+        const transaction = await db("transactions").where({
+            id, 
+            sessions_id: sessionsId
+        }).first()
 
         return { transaction };
     });
 
-    app.get("/sumary", async (request, replay) => {
-        const sumary = await db("transactions").sum("amount", {as: "amount"}).first()
+    app.get("/sumary", 
+    {
+        preHandler: [checkSessionsId]
+    }, 
+    async (request, replay) => {
+        const { sessionsId }= request.cookies;
+        const sumary = await db("transactions").where("sessions_id", sessionsId).sum("amount", {as: "amount"}).first()
 
         return { sumary };
     });
