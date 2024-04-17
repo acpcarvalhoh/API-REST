@@ -1,3 +1,4 @@
 tmp/database.db
 node_modules
 .env
+.env.test
